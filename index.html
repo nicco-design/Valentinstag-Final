@@ -120,6 +120,29 @@
     #no { background: #ffe8f1; color: #5b1731; }
     #msg { margin-top: 18px; font-weight: 600; font-size: 18px; }
 
+    .heart-burst {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 30;
+      overflow: hidden;
+    }
+
+    .burst-heart {
+      position: absolute;
+      top: 100vh;
+      font-size: clamp(16px, 2.2vw, 30px);
+      animation: floatUp 2s ease-in forwards;
+      opacity: 0.9;
+      will-change: transform, opacity;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(0.9); opacity: 0; }
+      12% { opacity: 1; }
+      100% { transform: translateY(-110vh) scale(1.25); opacity: 0; }
+    }
+
     @media (max-width: 920px) {
       .layout {
         flex-direction: column;
@@ -152,7 +175,6 @@
 
     <div class="card">
       <h1>Willst du mein Valentinstag-Date sein? 💘</h1>
-      <p>Nur eine kleine Frage...</p>
 
       <div class="btns">
         <button id="yes">Ja 😍</button>
@@ -179,6 +201,24 @@
     const yes = document.getElementById("yes");
     const no = document.getElementById("no");
     const msg = document.getElementById("msg");
+
+    const launchHearts = () => {
+      const burst = document.createElement("div");
+      burst.className = "heart-burst";
+
+      for (let i = 0; i < 70; i += 1) {
+        const heart = document.createElement("span");
+        heart.className = "burst-heart";
+        heart.textContent = "❤️";
+        heart.style.left = `${Math.random() * 100}vw`;
+        heart.style.animationDelay = `${Math.random() * 0.5}s`;
+        heart.style.animationDuration = `${1.4 + Math.random() * 0.8}s`;
+        burst.appendChild(heart);
+      }
+
+      document.body.appendChild(burst);
+      setTimeout(() => burst.remove(), 2000);
+    };
 
     const readAsDataUrl = (file) => new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -247,6 +287,7 @@
       msg.textContent = "Hiermit lade ich dich zu einer Paarmassage mit einem anschließenden Dinner ein. Sei um 16 Uhr bei mir. Ich freu mich schon mein Hase ❤️";
       no.style.display = "none";
       yes.textContent = "💖";
+      launchHearts();
     });
 
     no.addEventListener("click", () => {
