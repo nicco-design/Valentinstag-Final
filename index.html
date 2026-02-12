@@ -76,6 +76,16 @@
       aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 2px;
+      background: #f4f4f4;
+    }
+
+    .polaroid.missing-photo::after {
+      content: "Foto fehlt";
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+      color: #7a4a5d;
     }
 
     .polaroid.left {
@@ -116,7 +126,10 @@
 <body>
   <main class="layout">
     <figure class="polaroid left">
-      <img src="assets/polaroid-left.jpg" alt="Foto von euch beiden mit Feuerwerk" />
+      <img
+        data-sources="assets/polaroid-left.jpg|../assets/polaroid-left.jpg|polaroid-left.jpg|left.jpg|assets/left.jpg"
+        alt="Foto von euch beiden mit Feuerwerk"
+      />
     </figure>
 
     <div class="card">
@@ -132,7 +145,10 @@
     </div>
 
     <figure class="polaroid right">
-      <img src="assets/polaroid-right.jpg" alt="Spiegel-Selfie von euch beiden" />
+      <img
+        data-sources="assets/polaroid-right.jpg|../assets/polaroid-right.jpg|polaroid-right.jpg|right.jpg|assets/right.jpg"
+        alt="Spiegel-Selfie von euch beiden"
+      />
     </figure>
   </main>
 
@@ -140,6 +156,28 @@
     const yes = document.getElementById("yes");
     const no = document.getElementById("no");
     const msg = document.getElementById("msg");
+
+    const setupPolaroidSources = (img) => {
+      const sources = (img.dataset.sources || "").split("|").filter(Boolean);
+      let index = 0;
+
+      const loadNext = () => {
+        if (index >= sources.length) {
+          img.style.display = "none";
+          img.closest(".polaroid")?.classList.add("missing-photo");
+          return;
+        }
+
+        img.src = sources[index++];
+      };
+
+      img.addEventListener("error", loadNext);
+      loadNext();
+    };
+
+    document
+      .querySelectorAll(".polaroid img[data-sources]")
+      .forEach(setupPolaroidSources);
 
     yes.addEventListener("click", () => {
       msg.textContent = "Yaaaay! 🥰 Dann ist es ein Date! 💐";
