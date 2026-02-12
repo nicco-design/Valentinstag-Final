@@ -1,8 +1,7 @@
-Lege hier die beiden Bilder ab (für die GitHub-Pages-Version unter `docs/`):
+Für GitHub Pages (`docs/`) hier die Bilder ablegen:
 
-- `polaroid-left.jpg`
-- `polaroid-right.jpg`
+- `polaroid-left.jpg` (oder `left.jpg`)
+- `polaroid-right.jpg` (oder `right.jpg`)
 
-Alternativ funktionieren auch:
-- `left.jpg`
-- `right.jpg`
+Ohne diese Dateien kann man die Bilder lokal per Button auswählen.
+Diese lokale Auswahl ist nur im eigenen Browser gespeichert.

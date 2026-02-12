@@ -79,13 +79,26 @@
       background: #f4f4f4;
     }
 
-    .polaroid.missing-photo::after {
-      content: "Foto fehlt";
-      display: block;
+    .photo-actions {
       margin-top: 10px;
       text-align: center;
-      font-size: 14px;
+    }
+
+    .photo-actions button {
+      background: #ffe8f1;
+      color: #5b1731;
+      border: 0;
+      border-radius: 10px;
+      font-size: 13px;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .photo-actions small {
+      display: block;
+      margin-top: 6px;
       color: #7a4a5d;
+      font-size: 12px;
     }
 
     .polaroid.left {
@@ -125,16 +138,21 @@
 </head>
 <body>
   <main class="layout">
-    <figure class="polaroid left">
+    <figure class="polaroid left" data-photo-key="left">
       <img
-        data-sources="assets/polaroid-left.jpg|../assets/polaroid-left.jpg|polaroid-left.jpg|left.jpg|assets/left.jpg"
+        data-sources="assets/polaroid-left.jpg|assets/left.jpg"
         alt="Foto von euch beiden mit Feuerwerk"
       />
+      <div class="photo-actions" hidden>
+        <button type="button">Linkes Foto auswählen</button>
+        <small>Wähle ein JPG/PNG direkt vom Gerät</small>
+        <input type="file" accept="image/*" hidden />
+      </div>
     </figure>
 
     <div class="card">
       <h1>Willst du mein Valentinstag-Date sein? 💘</h1>
-      <p>Nur eine kleine Frage…</p>
+      <p>Nur eine kleine Frage...</p>
 
       <div class="btns">
         <button id="yes">Ja 😍</button>
@@ -144,11 +162,16 @@
       <div id="msg"></div>
     </div>
 
-    <figure class="polaroid right">
+    <figure class="polaroid right" data-photo-key="right">
       <img
-        data-sources="assets/polaroid-right.jpg|../assets/polaroid-right.jpg|polaroid-right.jpg|right.jpg|assets/right.jpg"
+        data-sources="assets/polaroid-right.jpg|assets/right.jpg"
         alt="Spiegel-Selfie von euch beiden"
       />
+      <div class="photo-actions" hidden>
+        <button type="button">Rechtes Foto auswählen</button>
+        <small>Wähle ein JPG/PNG direkt vom Gerät</small>
+        <input type="file" accept="image/*" hidden />
+      </div>
     </figure>
   </main>
 
@@ -157,27 +180,68 @@
     const no = document.getElementById("no");
     const msg = document.getElementById("msg");
 
-    const setupPolaroidSources = (img) => {
+    const readAsDataUrl = (file) => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
+    const setupPolaroid = (figure) => {
+      const img = figure.querySelector("img");
+      const actions = figure.querySelector(".photo-actions");
+      const actionBtn = actions.querySelector("button");
+      const input = actions.querySelector("input");
+      const photoKey = figure.dataset.photoKey;
+      const storageKey = `valentine-photo-${photoKey}`;
+
+      const showPicker = () => {
+        actions.hidden = false;
+      };
+
+      const hidePicker = () => {
+        actions.hidden = true;
+      };
+
+      const savedDataUrl = localStorage.getItem(storageKey);
+      if (savedDataUrl) {
+        img.src = savedDataUrl;
+        hidePicker();
+        return;
+      }
+
       const sources = (img.dataset.sources || "").split("|").filter(Boolean);
       let index = 0;
 
-      const loadNext = () => {
+      const tryNextSource = () => {
         if (index >= sources.length) {
-          img.style.display = "none";
-          img.closest(".polaroid")?.classList.add("missing-photo");
+          showPicker();
           return;
         }
 
         img.src = sources[index++];
       };
 
-      img.addEventListener("error", loadNext);
-      loadNext();
+      img.addEventListener("load", hidePicker);
+      img.addEventListener("error", tryNextSource);
+      tryNextSource();
+
+      actionBtn.addEventListener("click", () => input.click());
+
+      input.addEventListener("change", async (event) => {
+        const file = event.target.files?.[0];
+        if (!file) {
+          return;
+        }
+
+        const dataUrl = await readAsDataUrl(file);
+        localStorage.setItem(storageKey, dataUrl);
+        img.src = dataUrl;
+        hidePicker();
+      });
     };
 
-    document
-      .querySelectorAll(".polaroid img[data-sources]")
-      .forEach(setupPolaroidSources);
+    document.querySelectorAll(".polaroid").forEach(setupPolaroid);
 
     yes.addEventListener("click", () => {
       msg.textContent = "Yaaaay! 🥰 Dann ist es ein Date! 💐";
@@ -186,9 +250,8 @@
     });
 
     no.addEventListener("click", () => {
-      // TikTok-Trend: Nein verschwindet einfach 😉
       no.style.display = "none";
-      msg.textContent = "Hmm… komisch, wo ist denn das Nein hin? 😄";
+      msg.textContent = "Hmm... komisch, wo ist denn das Nein hin? 😄";
     });
   </script>
 </body>
