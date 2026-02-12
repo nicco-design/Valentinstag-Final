@@ -10,16 +10,38 @@ Diese Seite ist für **GitHub Pages** vorbereitet.
    - **Source:** Deploy from a branch
    - **Branch:** `main` (oder dein Branch)
    - **Folder:** `/ (root)` **oder** `/docs`
-4. Speichern.
+4. **Save** klicken.
+5. Nach dem Speichern zeigt GitHub oben den Live-Link an: `Your site is live at ...`.
 
-Die Website liegt jetzt in beiden Varianten bereit:
-- `index.html` im Root
-- `docs/index.html` im `docs`-Ordner
+## Wo ist die URL?
 
-Damit funktioniert die Seite unabhängig davon, ob in GitHub Pages `/ (root)` oder `/docs` eingestellt ist.
+Die URL hängt vom Repo-Typ ab:
+
+- **User/Org-Repo** (Name exakt `<user>.github.io`):
+  - `https://<user>.github.io/`
+- **Projekt-Repo** (z. B. `Valentinstag-Final`):
+  - `https://<user>.github.io/<repo>/`
+  - Beispiel: `https://maxmustermann.github.io/Valentinstag-Final/`
+
+> Hinweis: Die Auswahl `/ (root)` oder `/docs` ändert nur den Veröffentlichungsordner, nicht das URL-Schema.
 
 ## Falls weiterhin 404 kommt
 
-- Prüfen, ob wirklich der richtige Branch veröffentlicht wird.
-- Bei Projekt-Repos die korrekte URL nutzen: `https://<user>.github.io/<repo>/`
+- Prüfen, ob der richtige Branch veröffentlicht wird.
+- Prüfen, ob die Projekt-URL korrekt ist: `https://<user>.github.io/<repo>/`
+- In **Settings → Pages** prüfen, ob die Seite als "live" angezeigt wird.
 - Nach Änderungen 1–2 Minuten warten (Pages-Deploy kann kurz dauern).
+
+## Merge-Konflikte vermeiden
+
+Falls beim Mergen Konfliktmarker wie `<<<<<<<`, `=======`, `>>>>>>>` auftauchen:
+
+1. Konfliktmarker entfernen.
+2. Nur eine finale Version des betroffenen Abschnitts stehen lassen.
+3. Mit `git add README.md` markieren und committen.
+
+Prüfen mit:
+
+```bash
+rg -n "^(<<<<<<<|=======|>>>>>>>)" README.md
+```
